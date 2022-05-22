@@ -96,6 +96,7 @@
     local modkey = "Mod4"
     local altkey = "Mod1"
     local terminal = "kitty"
+    local lockscreen = "betterlockscreen --lock -l dimblur --display 2"
     local vi_focus = false -- vi-like client focus https://github.com/lcpz/awesome-copycats/issues/275
     local cycle_prev = true -- cycle with only the previously focused client or all https://github.com/lcpz/awesome-copycats/issues/274
     local editor = os.getenv("EDITOR") or "vim"
@@ -307,6 +308,17 @@
     awful.screen.connect_for_each_screen(
         function(s)
             beautiful.at_screen_connect(s)
+
+            -- Checks if there are no windows open on left screen
+            
+            -- tag.connect_signal("property::selected", function(t)
+            --     if #s.clients > 0 then
+            --         awful.spawn.with_shell("eww close powermenu")
+            --     else
+            --         awful.spawn.with_shell("eww open powermenu")
+            --     end
+            --   end
+            --   )
         end
     )
     -- }}}
@@ -322,8 +334,8 @@
                     awful.util.mymainmenu:toggle()
                 end
             ),
-            awful.button({}, 4, awful.tag.viewnext),
-            awful.button({}, 5, awful.tag.viewprev)
+            awful.button({modkey}, 4, awful.tag.viewnext),
+            awful.button({modkey}, 5, awful.tag.viewprev)
         )
     )
     
@@ -352,12 +364,12 @@
             end,
             {description = "take a screenshot", group = "hotkeys"}
         ),
-        -- X screen locker
+        -- Lock screen
         awful.key(
-            {altkey, "Control"},
-            "l",
+            {modkey, "Control"},
+            "q",
             function()
-                os.execute(scrlocker)
+                os.execute(lockscreen)
             end,
             {description = "lock screen", group = "hotkeys"}
         ),
@@ -498,24 +510,7 @@
             end,
             {description = "toggle wibox", group = "awesome"}
         ),
-        -- On-the-fly useless gaps change
-        -- awful.key({ altkey, "Control" }, "+", function () lain.util.useless_gaps_resize(1) end,
-        --           {description = "increment useless gaps", group = "tag"}),
-        -- awful.key({ altkey, "Control" }, "-", function () lain.util.useless_gaps_resize(-1) end,
-        --           {description = "decrement useless gaps", group = "tag"}),
-    
-        -- -- Dynamic tagging
-        -- awful.key({ modkey, "Shift" }, "n", function () lain.util.add_tag() end,
-        --           {description = "add new tag", group = "tag"}),
-        -- awful.key({ modkey, "Shift" }, "r", function () lain.util.rename_tag() end,
-        --           {description = "rename tag", group = "tag"}),
-        -- awful.key({ modkey, "Shift" }, "Left", function () lain.util.move_tag(-1) end,
-        --           {description = "move tag to the left", group = "tag"}),
-        -- awful.key({ modkey, "Shift" }, "Right", function () lain.util.move_tag(1) end,
-        --           {description = "move tag to the right", group = "tag"}),
-        -- awful.key({ modkey, "Shift" }, "d", function () lain.util.delete_tag() end,
-        --           {description = "delete tag", group = "tag"}),
-    
+
         -- Standard program
         awful.key(
             {modkey},
@@ -612,13 +607,6 @@
             end,
             {description = "dropdown application", group = "launcher"}
         ),
-        -- Widgets popups
-        -- awful.key({ altkey, }, "c", function () if beautiful.cal then beautiful.cal.show(7) end end,
-        --           {description = "show calendar", group = "widgets"}),
-        -- awful.key({ altkey, }, "h", function () if beautiful.fs then beautiful.fs.show(7) end end,
-        --           {description = "show filesystem", group = "widgets"}),
-        -- awful.key({ altkey, }, "w", function () if beautiful.weather then beautiful.weather.show(7) end end,
-        --           {description = "show weather", group = "widgets"}),
     
         -- ALSA volume control
         awful.key(
@@ -668,44 +656,6 @@
             end,
             {description = "volume 0%", group = "hotkeys"}
         ),
-        -- MPD control
-        -- awful.key({ altkey, "Control" }, "Up",
-        --     function ()
-        --         os.execute("mpc toggle")
-        --         beautiful.mpd.update()
-        --     end,
-        --     {description = "mpc toggle", group = "widgets"}),
-        -- awful.key({ altkey, "Control" }, "Down",
-        --     function ()
-        --         os.execute("mpc stop")
-        --         beautiful.mpd.update()
-        --     end,
-        --     {description = "mpc stop", group = "widgets"}),
-        -- awful.key({ altkey, "Control" }, "Left",
-        --     function ()
-        --         os.execute("mpc prev")
-        --         beautiful.mpd.update()
-        --     end,
-        --     {description = "mpc prev", group = "widgets"}),
-        -- awful.key({ altkey, "Control" }, "Right",
-        --     function ()
-        --         os.execute("mpc next")
-        --         beautiful.mpd.update()
-        --     end,
-        --     {description = "mpc next", group = "widgets"}),
-        -- awful.key({ altkey }, "0",
-        --     function ()
-        --         local common = { text = "MPD widget ", position = "top_middle", timeout = 2 }
-        --         if beautiful.mpd.timer.started then
-        --             beautiful.mpd.timer:stop()
-        --             common.text = common.text .. lain.util.markup.bold("OFF")
-        --         else
-        --             beautiful.mpd.timer:start()
-        --             common.text = common.text .. lain.util.markup.bold("ON")
-        --         end
-        --         naughty.notify(common)
-        --     end,
-        --     {description = "mpc on/off", group = "widgets"}),
     
         -- Copy primary to clipboard (terminals to gtk)
         awful.key(
@@ -725,36 +675,13 @@
             end,
             {description = "copy gtk to terminal", group = "hotkeys"}
         ),
-        -- User programs
-    
-        -- Default
-        --[[ Menubar
-        awful.key({ modkey }, "p", function() menubar.show() end,
-                  {description = "show the menubar", group = "launcher"}),
-        --]]
-        --[[ dmenu
-        awful.key({ modkey }, "x", function ()
-                os.execute(string.format("dmenu_run -i -fn 'Monospace' -nb '%s' -nf '%s' -sb '%s' -sf '%s'",
-                beautiful.bg_normal, beautiful.fg_normal, beautiful.bg_focus, beautiful.fg_focus))
-            end,
-            {description = "show dmenu", group = "launcher"}),
-        --]]
-        -- alternatively use rofi, a dmenu-like application with more features
-        -- check https://github.com/DaveDavenport/rofi for more details
-        --[[ rofi
-        awful.key({ modkey }, "x", function ()
-                os.execute(string.format("rofi -show %s -theme %s",
-                'run', 'dmenu'))
-            end,
-            {description = "show rofi", group = "launcher"}),
-        --]]
-        -- Prompt
+        
         -- ROFI - Launcher
         awful.key(
             {modkey},
             "space",
             function()
-                awful.util.spawn("rofi -no-lazy-grab -show drun -modi drun -theme ~/.config/rofi/styles/launcher.rasi")
+                awful.util.spawn("rofi -no-lazy-grab -show drun -modi drun -theme ~/.config/rofi/styles/launcher.rasi") 
             end,
             {
                 description = "run prompt rofi",

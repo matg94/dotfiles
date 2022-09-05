@@ -1,0 +1,106 @@
+## Color
+import:
+- ~/.config/alacritty/colors-material.yml
+
+## env vars
+env:
+  TERM: xterm-256color
+
+## window settings
+window:
+  opacity: 0.9
+  padding:
+    x: 30
+    y: 20
+
+
+# Class (window name)
+class:
+  instance: Alacritty
+  general: Alacritty
+
+# Scrolling
+scrolling:
+  history: 10000
+  multiplier: 3
+
+# Visual
+visual_bell:
+  animation: EaseOutExpo
+  duration: 0.5
+  color: "#e4c9af"
+
+# Selection?
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+  save_to_clipboard: true
+
+# writing thing (cursor) 
+cursor:
+  style: 'underline'
+
+# def Shell
+shell:
+  program: /usr/bin/zsh
+
+## Font stuff
+font:
+  normal:
+    family: "Ubuntu Mono"
+    style: Regular
+
+  bold:
+    family: "Ubuntu Mono"
+    style: Bold
+
+  italic:
+    family: "Ubuntu Mono"
+    style: Italic
+
+  bold_italic:
+    family: "Ubuntu Mono"
+    style: Bold Italic
+
+  size: 15
+
+  glyph_offset:
+    x: 0
+    y: 0
+
+custom_cursor_colors: true
+
+# Mouse config
+mouse:
+  double_click: { threshold: 300 }
+  triple_click: { threshold: 300 }
+  hide_when_typing: true
+
+# General config
+live_config_reload: true
+draw_bold_text_with_bright_colors: true
+
+colors:
+  primary:
+    background: '#101012'
+    foreground: '#bfc9db'
+  cursor:
+    text:   CellForeground
+    cursor: '#bfc9db'
+  bright:
+    black:   '#646a73'
+    red:     '#cf6679'
+    green:   '#a5d6a7'
+    yellow:  '#ffecb3'
+    blue:    '#8AB4F8'
+    magenta: '#bb86fc'
+    cyan:    '#03dac6'
+    white:   '#858893'
+  normal:
+    black:   '#646a73'
+    red:     '#cf6679'
+    green:   '#a5d6a7'
+    yellow:  '#fff59d'
+    blue:    '#8AB4F8'
+    magenta: '#bb86fc'
+    cyan:    '#03dac6'
+    white:   '#ffffff'

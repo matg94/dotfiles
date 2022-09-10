@@ -1,30 +1,27 @@
--------------------------------------------------
--- Logout Menu Widget for Awesome Window Manager
--- More details could be found here:
--- https://github.com/streetturtle/awesome-wm-widgets/tree/master/logout-menu-widget
-
--- @author Pavel Makhov
--- @copyright 2020 Pavel Makhov
--------------------------------------------------
 
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local buttons = require("widgets.buttons.buttons")
 
 local HOME = os.getenv('HOME')
 local ICON_DIR = HOME .. '/.config/awesome/widgets/audio-device-widget/icons/'
 
+local fg_normal = "#f8f8f2" -- widget font
+local fg_focus = "#8AB4F8" -- not sure
+local bg_normal = "#101012" -- background - main
+
+local speaker_button = buttons.create_button(
+    "蓼",
+    fg_normal,
+    bg_normal,
+    fg_focus, -- border color on hover
+    ""
+)
+
 local audio_device_widget = wibox.widget {
-    {
-        {
-            image = ICON_DIR .. 'audio_icon.svg',
-            resize = true,
-            widget = wibox.widget.imagebox,
-        },
-        margins = 7,
-        layout = wibox.container.margin
-    },
+    speaker_button,
     shape = function(cr, width, height)
     gears.shape.rounded_rect(cr, width, height, 4)
     end,
@@ -41,7 +38,7 @@ local popup = awful.popup {
     border_width = 1,
     border_color = beautiful.bg_focus,
     maximum_width = 400,
-    offset = { y = 5 },
+    offset = { y = 0, x = 0 },
     widget = {}
 }
 
@@ -117,10 +114,8 @@ local function worker(user_args)
                     awful.button({}, 1, function()
                         if popup.visible then
                             popup.visible = not popup.visible
-                            audio_device_widget:set_bg('#00000000')
                         else
                             popup:move_next_to(mouse.current_widget_geometry)
-                            audio_device_widget:set_bg(beautiful.bg_focus)
                         end
                     end)
             )

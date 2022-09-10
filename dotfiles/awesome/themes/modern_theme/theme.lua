@@ -1,17 +1,18 @@
 
 local gears = require("gears")
-local lain = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
 local naughty = require("naughty")
-local dpi = require("beautiful.xresources").apply_dpi
+local buttons = require("widgets.buttons.buttons")
+local xresources = require("beautiful.xresources")
+local dpi = xresources.apply_dpi
 
 local string, os = string, os
 
 local theme = {}
 theme.default_dir = require("awful.util").get_themes_dir() .. "default"
-theme.icon_dir = os.getenv("HOME") .. "/.config/awesome/themes/dracula_theme/icons"
-theme.wallpaper = os.getenv("HOME") .. "/.config/awesome/themes/dracula_theme/wall.png"
+theme.icon_dir = os.getenv("HOME") .. "/.config/awesome/themes/modern_theme/icons"
+theme.wallpaper = os.getenv("HOME") .. "/.config/awesome/themes/modern_theme/wall.png"
 theme.font = "Ubuntu Monospace 12"
 theme.fg_normal = "#f8f8f2" -- widget font
 theme.fg_focus = "#8AB4F8" -- not sure
@@ -33,8 +34,10 @@ theme.my_separator = theme.icon_dir .. "/separator-04.png"
 theme.taglist_squares_unsel = theme.icon_dir .. "/radio_button.svg"
 theme.icon_occupied = theme.icon_dir .. "/mic_active.svg"
 theme.widget_micUnmuted = theme.icon_dir .. "/mic_active.svg"
+theme.widget_pihole_icon = theme.icon_dir .. "/pihole.svg"
+theme.tailscale_icon = theme.icon_dir .. "/tailscale_icon_cloud.svg"
 theme.vpn_icon = theme.icon_dir .. "/vpn.svg"
-theme.useless_gap = dpi(5)
+theme.useless_gap = dpi(4)
 theme.tag_names = {"1", "2", "3", "4"}
 
 -- notifications
@@ -60,7 +63,9 @@ naughty.config.presets.warn =   naughty.config.presets.critical
 
 theme.musicplr = string.format("%s -e ncmpcpp", awful.util.terminal)
 
-local markup = lain.util.markup
+local markup = require("widgets.util.markup")
+
+-- local markup = lain.util.markup
 local space3 = markup.font("Roboto 3", " ")
 
 -- Tags
@@ -70,7 +75,7 @@ awful.layout.layouts = {
 }
 
 -- Clock
-local mytextclock = wibox.widget.textclock(markup(theme.fg_normal, space3 .. "%H:%M - %d %b"))
+local mytextclock = wibox.widget.textclock(markup(theme.fg_normal, space3 .. " %H:%M - %d %b"))
 mytextclock.font = "Ubuntu Monospace Bold 12"
 local clock_icon = wibox.widget.imagebox(theme.clock)
 local clockbg = wibox.container.background(mytextclock, theme.bg_normal, gears.shape.rectangle)
@@ -80,27 +85,22 @@ local clockwidget = wibox.container.margin(clockbg, dpi(20), dpi(3), dpi(5), dpi
 local logout_menu_widget = require("widgets.logout-menu-widget.logout-menu")
 local audio_menu_widget = require("widgets.audio-device-widget.audio-device")
 
+-- Microphone button
+local microphone_button = buttons.create_button(
+    "",
+    theme.fg_normal,
+    theme.bg_normal,
+    theme.fg_focus, -- border color on hover
+    ""
+)
+
 -- Microphone Widget
 local toggle = require("widgets.toggle-widget.toggle")
 
 theme.mic =
     toggle(
     {
-        widget = wibox.widget {
-            {
-                {
-                    image = theme.widget_micUnmuted,
-                    resize = true,
-                    widget = wibox.widget.imagebox
-                },
-                margins = 7,
-                layout = wibox.container.margin
-            },
-            shape = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 4)
-            end,
-            widget = wibox.container.background
-        },
+        widget = microphone_button,
         toggle_func = {"amixer", "set", "Capture", "toggle"},
         get_status_func = {"bash", "-c", "amixer get Capture | grep '\\[on\\]'"},
         timeout = 10,
@@ -115,27 +115,89 @@ theme.mic =
 )
 local widget_mic = theme.mic.widget
 
+-- pihole button
+local pihole_button = buttons.create_button(
+    "",
+    theme.fg_normal,
+    theme.bg_normal,
+    theme.fg_focus, -- border color on hover
+    ""
+)
+
+-- pihole widget
+theme.pihole =
+    toggle(
+    {
+        widget = pihole_button,
+        enable_func = {"utils", "pihole", "-enable"},
+        disable_func = {"utils", "pihole", "-disable"},
+        get_status_func = {"zsh", "-c", "utils pihole | grep 'enabled'"},
+        timeout = 10,
+        settings = function(self)
+            if self.state == "off" then
+                self.widget:set_bg(theme.fg_urgent)
+            else
+                self.widget:set_bg(theme.bg_normal)
+            end
+        end
+    }
+)
+local widget_pihole = theme.pihole.widget
+
+
+-- Wifi Menu Button
+local wifibutton = buttons.create_button(
+    "",
+    theme.fg_normal,
+    theme.bg_normal,
+    theme.fg_focus, -- border color on hover
+    "wifimenu"
+)
+
+-- Tailscale Button
+local tailscale_button = buttons.create_button(
+    "",
+    theme.fg_normal,
+    theme.bg_normal,
+    theme.fg_focus, -- border color on hover
+    ""
+)
+
+-- Tailscale Widget
+theme.tailscale =
+    toggle(
+    {
+        widget = tailscale_button,
+        enable_func = {"tailscale", "up"},
+        disable_func = {"tailscale", "down"},
+        get_status_func = {"zsh", "-c", "tailscale status | grep '100'"},
+        timeout = 10,
+        settings = function(self)
+            if self.state == "off" then
+                self.widget:set_bg(theme.bg_normal)
+            else
+                self.widget:set_bg(theme.light_green)
+            end
+        end
+    }
+)
+local widget_tailscale = theme.tailscale.widget
+
+-- NordVPN button
+local nordvpn_button = buttons.create_button(
+    "",
+    theme.fg_normal,
+    theme.bg_normal,
+    theme.fg_focus, -- border color on hover
+    ""
+)
+
 -- NordVPN Widget
-local toggle = require("widgets.toggle-widget.toggle")
 
 theme.nordvpn =
     toggle(
     {
-        widget = wibox.widget {
-            {
-                {
-                    image = theme.vpn_icon,
-                    resize = true,
-                    widget = wibox.widget.imagebox
-                },
-                margins = 7,
-                layout = wibox.container.margin
-            },
-            shape = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 4)
-            end,
-            widget = wibox.container.background
-        },
+        widget = nordvpn_button,
         enable_func = {"nordvpn", "c"},
         disable_func = {"nordvpn", "d"},
         get_status_func = {"bash", "-c", "nordvpn status | grep 'Connected'"},
@@ -151,34 +213,16 @@ theme.nordvpn =
 )
 local widget_nordvpn = theme.nordvpn.widget
 
--- Calendar
-local mytextcalendar = wibox.widget.textclock(markup.fontfg(theme.font, theme.fg_normal, space3 .. "%d %b"))
-local calbg = wibox.container.background(mytextcalendar, theme.bg_normal, gears.shape.rectangle)
-local calendarwidget = wibox.container.margin(calbg, dpi(0), dpi(0), dpi(5), dpi(5))
-theme.cal =
-    lain.widget.cal(
-    {
-        attach_to = {mytextclock, mytextcalendar},
-        notification_preset = {
-            fg = theme.fg_normal,
-            bg = theme.bg_normal,
-            default_title = '',
-            position = "top_left",
-            height = 125,
-            font = "Ubuntu Monospace 10"
-        }
-    }
-)
-
 -- ALSA volume bar
+local alsabar = require("widgets.volume-bar-widget.alsabar")
 theme.volume =
-    lain.widget.alsabar(
+    alsabar(
     {
-        notification_preset = {font = "Monospace 9"},
+        notification_preset = {font = "Ubuntu Monospace 9"},
         --togglechannel = "IEC958,3",
-        width = dpi(80),
-        height = dpi(10),
-        border_width = dpi(0),
+        width = dpi(100),
+        height = dpi(7),
+        border_width = dpi(2),
         colors = {
             background = theme.bg_focus,
             unmute = theme.light_green,
@@ -188,25 +232,16 @@ theme.volume =
 )
 theme.volume.bar.paddings = dpi(0)
 theme.volume.bar.margins = dpi(5)
-local volumewidget = wibox.container.background(theme.volume.bar, theme.bg_normal, gears.shape.rectangle)
+local volumewidget = wibox.container.background(theme.volume.bar, theme.bg_normal, gears.shape.rounded_rect)
 volumewidget = wibox.container.margin(volumewidget, dpi(0), dpi(0), dpi(5), dpi(5))
-
--- Launcher
-local mylauncher = awful.widget.button({image = theme.awesome_icon_launcher})
-mylauncher:connect_signal(
-    "button::press",
-    function()
-        awful.util.mymainmenu:toggle()
-    end
-)
 
 -- Separators
 local first = wibox.widget.textbox('<span font="Roboto 7"> </span>')
 local separator = wibox.widget.imagebox(theme.my_separator)
 
 function theme.at_screen_connect(s)
-    -- Quake application
-    s.quake = lain.util.quake({app = awful.util.terminal})
+    -- -- Quake application
+    -- s.quake = lain.util.quake({app = awful.util.terminal})
 
     -- If wallpaper is a function, call it with the screen
     local wallpaper = theme.wallpaper
@@ -216,13 +251,13 @@ function theme.at_screen_connect(s)
     gears.wallpaper.maximized(wallpaper, s, true)
 
     -- Tags
-    local tags = require("themes.modern_theme.tags")
+    local tags = require("widgets.util.tags")
     tags.CreateTags(s, 4)
     -- Create a taglist widget
     s.mytaglist = tags.CreateTagList(s, theme.taglist_normal, theme.taglist_active, theme.taglist_occupied)
 
     local mytaglistcont = wibox.container.background(s.mytaglist, theme.bg_normal, gears.shape.rectangle)
-    s.mytag = wibox.container.margin(mytaglistcont, dpi(0), dpi(0), dpi(5), dpi(5))
+    s.mytag = wibox.container.margin(mytaglistcont, dpi(0), dpi(0), dpi(6), dpi(6))
 
     -- Create the wibox
     s.mywibox =
@@ -231,9 +266,9 @@ function theme.at_screen_connect(s)
             position = "top",
             type = "dock",
             screen = s,
-            height = dpi(32),
-            width = dpi(1800),
-            opacity = 0.9,
+            height = dpi(36),
+            width = dpi(2250),
+            opacity = 0.95,
             shape = gears.shape.rounded_rect
         }
     )
@@ -266,7 +301,13 @@ function theme.at_screen_connect(s)
             first,
             widget_nordvpn,
             first,
+            widget_tailscale,
+            first,
             widget_mic,
+            first,
+            widget_pihole,
+            first,
+            wifibutton,
             first,
             logout_menu_widget(),
             first,

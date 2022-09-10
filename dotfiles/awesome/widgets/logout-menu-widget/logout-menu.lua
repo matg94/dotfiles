@@ -11,24 +11,29 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local buttons = require("widgets.buttons.buttons")
 
 local HOME = os.getenv('HOME')
 local ICON_DIR = HOME .. '/.config/awesome/widgets/logout-menu-widget/icons/'
 
 local lockscreen = "betterlockscreen --lock -l dimblur --display 2"
+local fg_normal = "#f8f8f2" -- widget font
+local fg_focus = "#8AB4F8" -- not sure
+local bg_normal = "#101012" -- background - main
+
+-- Power button
+local powermenu_button = buttons.create_button(
+    "",
+    fg_normal,
+    bg_normal,
+    fg_focus, -- border color on hover
+    ""
+)
 
 local logout_menu_widget = wibox.widget {
-    {
-        {
-            image = ICON_DIR .. 'power_w.svg',
-            resize = true,
-            widget = wibox.widget.imagebox,
-        },
-        margins = 7,
-        layout = wibox.container.margin
-    },
+    powermenu_button,
     shape = function(cr, width, height)
-    gears.shape.rounded_rect(cr, width, height, 4)
+        gears.shape.rounded_rect(cr, width, height, 4)
     end,
     widget = wibox.container.background,
 }
@@ -123,10 +128,8 @@ local function worker(user_args)
                     awful.button({}, 1, function()
                         if popup.visible then
                             popup.visible = not popup.visible
-                            logout_menu_widget:set_bg('#00000000')
                         else
                             popup:move_next_to(mouse.current_widget_geometry)
-                            logout_menu_widget:set_bg(beautiful.bg_focus)
                         end
                     end)
             )

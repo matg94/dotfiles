@@ -1,0 +1,46 @@
+
+# Basic Settings
+set $mod Mod4
+set $term alacritty
+set $menu wofi
+focus_follows_mouse no
+
+# Using letters as arrows to avoid raising layer on keyboard
+set $left h
+set $down j
+set $up k
+set $right l
+
+# GTK Set up
+exec gsettings set org.gnome.desktop.interface gtk-theme 'Arc-Dark'  
+exec gsettings set org.gnome.desktop.interface icon-theme 'Adwaita'
+
+# Setting up GNOME deps
+exec dbus-daemon --session --address=unix:path=$XDG_RUNTIME_DIR/bus
+
+# Waybar
+bar {
+    swaybar_command waybar
+}
+
+# Include
+include ./config.d/*
+
+# Workspace Locks
+workspace 1 output HDMI-A-1
+workspace 2 output HDMI-A-1
+workspace 3 output HDMI-A-1
+workspace 4 output HDMI-A-1
+workspace 6 output DP-2
+workspace 7 output DP-2
+workspace 8 output DP-2
+workspace 9 output DP-2
+
+# Random Wallpaper
+set $wallpapers_path $(find $HOME/.wallpapers  -type f | shuf -n 1)
+output * bg $wallpapers_path fill
+
+# Auto start
+exec systemctl --user import-environment
+exec mako
+

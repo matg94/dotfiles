@@ -1,0 +1,30 @@
+# Visual
+
+gaps inner 6
+gaps outer 6
+#blur enable
+#corner_radius 8
+
+font JetBrainsMono 9
+
+default_border pixel 2
+
+# set $cl_high #4c566a
+# set $cl_indi #bf616a
+# set $cl_back #a3be8c
+# set $cl_fore #ebcb8b
+# set $cl_urge #b48ead
+
+set $black #4c566a
+set $red #bf616a
+set $green #a3be8c
+set $yellow #ebcb8b
+set $blue #81a1c1
+set $magenta #b48ead
+set $cyan #8fbcbb
+set $white #eceff4
+
+client.focused          $cyan $cyan $white $cyan $cyan
+client.focused_inactive $black $black $white $black $black
+client.unfocused        $black $black $white $black $black
+client.urgent           $red $red $white $red $red

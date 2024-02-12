@@ -1,0 +1,13 @@
+# Outputs for Displays
+
+output HDMI-A-1 {
+    resolution 3840x2160@60.000Hz
+    pos 0 0
+    scale 2
+}
+
+output DP-2 {
+    resolution 3840x2160@60.000Hz
+    pos 1920 0
+    scale 2
+}

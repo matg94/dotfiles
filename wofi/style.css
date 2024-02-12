@@ -1,0 +1,56 @@
+*{
+    font-family: JetBrainsMonoNerdfont;
+}
+
+window {
+    margin: 1px;
+    border: 0px solid white;
+    background-color: #88c0d0;
+    border-radius: 15px 15px 15px 15px;
+}
+
+#input {
+    margin: 5px;
+    border-radius: 0px;
+    border: none;
+    border-bottom: 0px solid #3b4252;
+    background-color: #1A1C1E;
+    color: #e5e9f0;
+}
+
+#inner-box {
+    margin: 5px;
+    background-color: #2e3440;
+}
+
+#outer-box {
+    margin: 5px;
+    padding:20px;
+    background-color: #3b4252;
+    border-radius: 15px 15px 15px 15px;
+}
+
+#scroll {
+    
+}
+
+#text {
+    margin: 5px;
+    color: #d8dee9;
+    /* border: 2px solid cyan; */
+    /* background-color: cyan; */
+}
+
+/* #entry:nth-child(even){
+    background-color: #404552;
+} */
+
+#entry:selected {
+    background-color: #6d96a5;
+    color: #bf616a
+}
+
+#text:selected {
+    text-decoration-color: white;
+    background-color: #6d96a5 ;
+}

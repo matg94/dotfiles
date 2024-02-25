@@ -3,7 +3,7 @@
 -- vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 -- NvimTree
-vim.keymap.set("n", "<ALT-1>", vim.cmd.NvimTreeFocus)
+vim.keymap.set("n", "<A-1>", vim.cmd.NvimTreeToggle)
 
 -- Move Commands
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
